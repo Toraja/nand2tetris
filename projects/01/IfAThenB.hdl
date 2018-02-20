@@ -1,0 +1,16 @@
+// This file is created by me
+
+/**
+ * IfAThenB:
+ * out = b if a ==1
+ *       1 otherwise
+ */
+
+ CHIP IfAThenB {
+	IN a, b;
+	OUT out;
+
+	PARTS:
+	Not(in=a, out=w);
+	Or(a=w, b=b, out=out);
+ }
