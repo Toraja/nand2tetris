@@ -27,8 +27,8 @@
 // if (out < 0) set ng = 1
 
 CHIP ALU {
-    IN  
-        x[16], y[16],  // 16-bit inputs        
+    IN
+        x[16], y[16],  // 16-bit inputs
         zx, // zero the x input?
         nx, // negate the x input?
         zy, // zero the y input?
@@ -36,11 +36,37 @@ CHIP ALU {
         f,  // compute out = x + y (if 1) or x & y (if 0)
         no; // negate the out output?
 
-    OUT 
+    OUT
         out[16], // 16-bit output
         zr, // 1 if (out == 0), 0 otherwise
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+	// Put you code here:
+	// Zero x ?
+	// Mux + And or Not + And, either way works fine
+	//Mux16(a=true, b=false, sel=zx, out=zx16);
+	//And16(a=x, b=zx16, out=xzx);
+	Not(in=zx, out=nzx);
+	And16(a=x, b[0]=nzx, b[1]=nzx, b[2]=nzx, b[3]=nzx, b[4]=nzx, b[5]=nzx, b[6]=nzx, b[7]=nzx, b[8]=nzx, b[9]=nzx, b[10]=nzx, b[11]=nzx, b[12]=nzx, b[13]=nzx, b[14]=nzx, b[15]=nzx, out=xzx);
+	// Nagate x ?
+	Mux16(a=false, b=true, sel=nx, out=nx16);
+	Xor16(a=xzx, b=nx16, out=xnx);
+	// Zero y ?
+	Mux16(a=true, b=false, sel=zy, out=zy16);
+	And16(a=y, b=zy16, out=yzy);
+	// Nagate y ?
+	Mux16(a=false, b=true, sel=ny, out=ny16);
+	Xor16(a=yzy, b=ny16, out=yny);
+	// computation (And or Add)
+	And16(a=xnx, b=yny, out=and);
+	Add16(a=xnx, b=yny, out=add);
+	Mux16(a=and, b=add, sel=f, out=cmp);
+	// Nagete output ?
+	Mux16(a=false, b=true, sel=no, out=no16);
+	Xor16(a=cmp, b=no16, out=out, out=w, out[15]=sign);
+	// Is output 0 ?
+	IsZero16(in=w, out=zr);
+	// Is output negative ?
+	And(a=sign, b=true, out=ng);
 }
