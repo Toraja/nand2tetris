@@ -16,4 +16,18 @@ CHIP RAM4K {
 
     PARTS:
     // Put your code here:
+	// Pass the load bit only to the target register so that
+	// other registers will not be overwritten when load bit is 1
+	DMux8Way(in=load, sel=address[0..2], a=la, b=lb, c=lc, d=ld, e=le, f=lf, g=lg, h=lh);
+	// Navigate input to the target register
+	RAM512(in=in, load=la, address=address[3..11], out=a);
+	RAM512(in=in, load=lb, address=address[3..11], out=b);
+	RAM512(in=in, load=lc, address=address[3..11], out=c);
+	RAM512(in=in, load=ld, address=address[3..11], out=d);
+	RAM512(in=in, load=le, address=address[3..11], out=e);
+	RAM512(in=in, load=lf, address=address[3..11], out=f);
+	RAM512(in=in, load=lg, address=address[3..11], out=g);
+	RAM512(in=in, load=lh, address=address[3..11], out=h);
+	// Output the bits from target register
+	Mux8Way16(a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h, sel=address[0..2], out=out);
 }

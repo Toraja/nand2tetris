@@ -16,5 +16,15 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+	// Overwrite register if any of the control bits are on
+	Or(a=reset, b=load, out=l1);
+	Or(a=l1, b=inc, out=l);
+
+	// Determine which value to feed into register
+	Inc16(in=lo, out=oinc);
+	Mux16(a=lo, b=oinc, sel=inc, out=o1);
+	Mux16(a=o1, b=in, sel=load, out=o2);
+	Mux16(a=o2, b=false, sel=reset, out=o3);
+
+	Register(in=o3, load=l, out=lo, out=out);
 }
