@@ -12,24 +12,23 @@
 // the screen should remain fully clear as long as no key is pressed.
 
 // Put your code here.
-(LOOP)
-	@24576
+(LISTENKBD)
+	@KBD
 	D=M
 	@WHITE
 	D;JEQ
 (BLACK)
 	//@-1
-	@32767
-	D=A
+	//D=A
 	@colour
-	M=D
+	M=-1
 	@FILL
 	0;JMP
 (WHITE)
 	@colour
 	M=0
 (FILL)
-	@16384
+	@SCREEN
 	D=A
 	@i
 	M=D
@@ -42,12 +41,12 @@
 	@i		// increment index
 	M=M+1
 	// Keep filling?
-	@24576
+	@SCREEN
 	D=A
 	@i
 	D=D-M	// 24576 - index
 	@FILLMORE
 	D;JGT
 	// Listen the keyboard again
-	@LOOP
+	@LISTENKBD
 	0;JMP
